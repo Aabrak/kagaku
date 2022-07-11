@@ -1,0 +1,13 @@
+* {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #222222;
+}
+
+#can {
+  /* background-color: #333; */
+  /* background-image: url("https://i.redd.it/1cnnt9mpmgu51.jpg"); */
+  background-image: url("https://i.pinimg.com/originals/1d/a7/4e/1da74e3bc2233833fe96916a43458d98.gif");
+  background-repeat: repeat;
+}
