@@ -129,10 +129,6 @@ sandboxArray[Math.floor(sandboxArray.length/2)][Math.floor(sandboxArray[0].lengt
 // MAIN LOOP
 let loop = () => {
     clear();
-    
-    if(frameCount%2) {
-        sandboxArray[sandboxArray.length-1][Math.floor(sandboxArray.length/2)] = 1;
-    }
 
     sandboxArray = automata(sandboxArray);
     
