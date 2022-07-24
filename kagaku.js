@@ -1,11 +1,15 @@
 // #region VARS
 const can = document.getElementById('can');
 const ctx = can.getContext("2d");
-const ratio = 30;
-const fps = 1;
+const ratio = 20;
+const fps = 50;
 const maxWidth = Math.floor(window.innerWidth / ratio);
 const maxHeight = Math.floor(window.innerHeight / ratio);
 let frameCount = 0;
+let g = { // GRAVITY VALUE
+    x: 0,   //1 > RIGHT -1 > LEFT
+    y: 1    //1 > DOWN -1 > UP
+}
 // #endregion
 
 // #region FUNCS
@@ -43,7 +47,7 @@ let drawRect = (x, y, w, h, colorInt = "rgba(0, 0, 0, 0)", colorExt="#000") => {
     ctx.strokeStyle = colorExt;
     ctx.rect(x, y, w, h);
     ctx.fill();
-    ctx.stroke();
+    // ctx.stroke();
 };
 
 let drawSandbox = (arr) => {
@@ -60,7 +64,7 @@ let drawSandbox = (arr) => {
             switch (arr[i][j]) {
                 // AIR
                 case 0:
-                    colInt = "rgba(0, 0, 0, 1)";
+                    colInt = "rgba(0, 0, 0, 0.8)";
                     break;
                     
                 // WATER
@@ -72,6 +76,12 @@ let drawSandbox = (arr) => {
                 case 2:
                     colInt = "rgba(255, 80, 0, 0.9)";
                     break;
+                
+                // LAVA
+                case 3:
+                    colInt = "rgba(255, 80, 0, 0.9)";
+                    break;
+
             }
 			drawRect(xcent+i*ratio, ycent+j*ratio, ratio, ratio, colInt, "#000");
 
@@ -92,24 +102,19 @@ let automata = (arr) => {
             switch (arr[i][j]) {
                 // WATER
                 case 1:
-                    if(i>0 && arr[i-1][j] == 0) {
-                        nextArr[i-1][j] = 1;
-                        nextArr[i][j] = 0;
-                    } 
-                    else if(i>0 && arr[i][j-1] == 0) {
-                        nextArr[i][j-1] = 1;
-                        nextArr[i][j] = 0;
-                    }
-                    else if(i>0 && arr[i][j+1] == 0) {
-                        nextArr[i][j+1] = 1;
+                    if(i>0 && i<arr.length-1 && arr[i+g.x][j+g.y] == 0) {
+                        nextArr[i+g.x][j+g.y] = 1;
                         nextArr[i][j] = 0;
                     }
                     break;
                 
                 // LAVA
-                case 2:
-                    // ayees
-                    break;
+                // case 2:
+                //     if(i>0 && i<arr.length-1 && arr[i][j-1] == 0) {
+                //         nextArr[i][j-1] = 2;
+                //         nextArr[i][j] = 0;
+                //     }
+                //     break;
             }
 
 		}
@@ -120,17 +125,33 @@ let automata = (arr) => {
 };
 // #endregion
 
+// #region -- PHYSICS
+let gravityAxis = (x, y) => {
+    g.x = x;
+    g.y = y;
+}
+//#endregion
+
 // #endregion
 
 // INTERCEPT
 let sandboxArray = make2DArray(maxWidth, maxHeight);
 sandboxArray[Math.floor(sandboxArray.length/2)][Math.floor(sandboxArray[0].length/2)] = 1;
+sandboxArray[Math.floor(sandboxArray.length/4)][Math.floor(sandboxArray[0].length/2)] = 1;
+sandboxArray[Math.floor(sandboxArray.length/4)][Math.floor(sandboxArray[0].length/4)] = 2;
+
+document.getElementById("gravU").onclick = function(event) { gravityAxis(0, -1); }
+document.getElementById("gravD").onclick = function(event) { gravityAxis(0, 1); }
+document.getElementById("gravL").onclick = function(event) { gravityAxis(-1, 0); }
+document.getElementById("gravR").onclick = function(event) { gravityAxis(1, 0); }
+document.getElementById("gravS").onclick = function(event) { gravityAxis(0, 0); }
 
 // MAIN LOOP
 let loop = () => {
     clear();
 
     sandboxArray = automata(sandboxArray);
+    // sandboxArray[Math.floor(sandboxArray.length/2)][Math.floor(sandboxArray[0].length/2)] = 1;
     
     frameCount++;
     drawSandbox(sandboxArray);
